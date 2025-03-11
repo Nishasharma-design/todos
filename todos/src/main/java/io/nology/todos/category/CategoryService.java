@@ -110,6 +110,8 @@ public class CategoryService {
 
 
   /* 
+     Cmd + Ctrl + Space to add emojis
+
    * This class is responsible for:
 Processing the data (converting DTOs to entities, validating, etc.)
  Interacting with the database via CategoryRepository

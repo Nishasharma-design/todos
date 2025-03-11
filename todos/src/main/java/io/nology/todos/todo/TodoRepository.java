@@ -1,20 +1,24 @@
 package io.nology.todos.todo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import io.nology.todos.category.Category;
+
 import java.util.List;
 
 
 public interface TodoRepository extends JpaRepository<Todo, Long> {
     
-
-    // find all todos by category
-    List<Todo> findByCategoryId(Long categoryId);
-
-    // find todos that are not archived
-    List<Todo> findByIsArchived(boolean isArchived);
+  //find todos by category, but exclude archived todos
+    List<Todo> findByCategoryIdAndIsArchivedFalse(Long categoryId);
     
-    // find todos by category and archived status
+    // Find all todos, excluding archived ones
+    List<Todo> findByIsArchivedFalse();
+
+    // Find todos by category and check archived status
     List<Todo> findByCategoryIdAndIsArchived(Long categoryId, Boolean isArchived);
 
-    
+    // Query to find todos by category
+    List<Todo> findByCategory(Category category);
+
 }

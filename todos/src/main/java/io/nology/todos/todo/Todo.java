@@ -1,6 +1,8 @@
 package io.nology.todos.todo;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.nology.todos.category.BaseEntity;
 import io.nology.todos.category.Category;
@@ -19,35 +21,39 @@ public class Todo extends BaseEntity {
     private Boolean isCompleted = false;
 
     @Column(nullable = false)
-    private Boolean isArchived = false;
+    @JsonIgnore
+    private Boolean isArchived;
 
-    @Temporal(TemporalType.DATE)
-    private Date dueDate;
+    @Column
+    private LocalDateTime dueDate;
 
-    @Enumerated(EnumType.STRING)
-    private Priority priority;
+    private String description;
+
+    
+    private Integer priority;
 
 
     @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
+    @JoinColumn(name = "category_id", nullable = false) //this establish Foreign key relation with category model
     private Category category;
 
 
-    public enum Priority {
-        LOW, MEDIUM, HIGH
-    }
+    
 
     public Todo() {
 
     }
 
-    public Todo(String title, Category category, Date dueDate, Priority priority) {
+    public Todo(String title, Category category, boolean isCompleted, LocalDateTime dueDate, Integer priority,Boolean isArchived) {
         this.title = title;
+        this.isCompleted = isCompleted;
         this.category = category;
         this.dueDate = dueDate;
         this.priority = priority;
+        this.isArchived = isArchived;
     }
 
+//getter and setter for title
     public String getTitle() {
         return title;
     }
@@ -56,6 +62,7 @@ public class Todo extends BaseEntity {
         this.title = title;
     }
 
+//getter and setter for isCompleted
     public boolean getIsCompleted() {
         return isCompleted;
     }
@@ -64,22 +71,36 @@ public class Todo extends BaseEntity {
         isCompleted = completed;
     }
 
-    public boolean getIsArchived() {
+//getter and setter for isArchived
+    public Boolean getIsArchived() {
         return isArchived;
     }
 
-    public void setIsArchived(boolean archived) {
+    public void setIsArchived(Boolean archived) {
           isArchived = archived;
     }
 
-    public Date getDueDate() {
+
+//getter and setter for dueDate
+    public LocalDateTime getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(Date dueDate) {
+    public void setDueDate(LocalDateTime dueDate) {
         this.dueDate = dueDate;
     }
 
+    // Getter and Setter for description
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+
+//getter and setter for category
     public Category getCategory() {
         return category;
     }
@@ -88,5 +109,14 @@ public class Todo extends BaseEntity {
         this.category = category;
      }
 
+//getter and setter for priority
+
+     public Integer getPriority() {
+        return priority;
+     }
+
+     public void setPriority(Integer priority) {
+        this.priority = priority;
+     }
 
 }

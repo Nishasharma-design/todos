@@ -1,66 +1,66 @@
 package io.nology.todos.todo;
 
 import java.util.List;
-import java.util.Optional;
+//import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/todos")
 public class TodoController {
-
     
-     private final TodoService todoService;
+    @Autowired
+    private TodoService todoService;
 
-
-     public TodoController(TodoService todoService) {
+    public TodoController(TodoService todoService) {
         this.todoService = todoService;
-     }
+    }
 
-     //Create a new Todo
-     @PostMapping
-     public ResponseEntity<Todo> createTodo(@RequestBody Todo todo) {
-        Todo createdTodo = todoService.createTodo(todo); // this is calling service layer to do logic and save in db
-        return ResponseEntity.ok(createdTodo);
-     }
+    //  Create a new Todo with proper response codes
+    @PostMapping
+public ResponseEntity<Todo> createTodo(@RequestBody CreateTodoDTO data) {
+    Todo createdTodo = todoService.createTodo(data);
+    return ResponseEntity.ok(createdTodo);
+}
 
-     @GetMapping
-     public ResponseEntity<List<Todo>> getTodosByCategory(Long categoryId) {
+
+    //  Get all Todos (no ResponseEntity needed, simple case)
+    @GetMapping
+    public ResponseEntity<List<Todo>> getTodos(@RequestParam(required = false) Long category) {
         List<Todo> todos;
-        if (categoryId != null) {
-            todos = todoService.getTodosByCategory(categoryId);
+        if (category != null) {
+            todos = todoService.getTodosByCategory(category); // Fetch todos by category
         } else {
-            todos = todoService.getTodos();
+            todos = todoService.getTodos(); // Fetch all todos if no category is provided
         }
         return ResponseEntity.ok(todos);
-        
-     }
-
+    }
+    
+     // Get a single Todo by ID
      @GetMapping("/{id}")
      public ResponseEntity<Todo> getTodoById(@PathVariable Long id) {
-        Optional<Todo> todo = todoService.getTodoById(id);
-        if (todo.isPresent()) {
-            return ResponseEntity.ok(todo.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+         Todo todo = todoService.getTodoById(id); // Calls the service method to fetch todo by ID
+         return ResponseEntity.ok(todo); // Returns the todo with a 200 OK response
+     }
+    
 
-    //  Update an existing Todo
+    //  Update a Todo
     @PutMapping("/{id}")
-    public ResponseEntity<Todo> updateTodo(@PathVariable Long id, @RequestBody Todo updatedTodo) {
-        Todo todo = todoService.updateTodo(id, updatedTodo);
-        if (todo != null) {
-            return ResponseEntity.ok(todo);
-        }
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<Todo> updateTodo(@PathVariable Long id, @RequestBody UpdateTodoDTO data) {
+        Todo todo = todoService.updateTodo(id, data);
+        return todo != null ? ResponseEntity.ok(todo) : ResponseEntity.notFound().build();
     }
-    
-    
 
-
+    // ✅ Soft delete (archive) a Todo
+    @DeleteMapping("/{id}") //@DeleteMapping("/{id}") annotation maps the DELETE request to this method.
+    public ResponseEntity<Void> softDeleteTodo(@PathVariable Long id) {
+        Todo deletedTodo = todoService.softDeleteTodo(id);
+        return deletedTodo != null ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
 }
+
 
 
 /* public ResponseEntity<Todo> createTodo(@RequestBody Todo todo) {
@@ -74,4 +74,23 @@ public class TodoController {
       request body should be converted into Todo java object
 
       
+  @GetMapping
+    public List<Todo> getTodos() {
+        return todoService.getTodos();
+    }
+
+    //  Get a single Todo, handling 404 errors
+    @GetMapping("/{id}")
+    public ResponseEntity<Todo> getTodoById(@PathVariable Long id) {
+        Optional<Todo> todo = Optional.ofNullable(todoService.getTodoById(id));
+        return todo.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+✔️ The frontend sends a DELETE /todos/{id} request.
+✔️ Spring Boot maps it to @DeleteMapping("/{id}").
+✔️ Instead of deleting, softDeleteTodo() sets isArchived = true.
+✔️ Future GET /todos requests only return non-archived todos, so archived ones "disappear" from the UI.
+
+
+
     */

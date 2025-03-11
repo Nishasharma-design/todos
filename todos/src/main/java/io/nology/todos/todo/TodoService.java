@@ -1,95 +1,116 @@
 package io.nology.todos.todo;
 
 import java.util.List;
-import java.util.Optional;
-
 
 import org.springframework.stereotype.Service;
 
+import io.nology.todos.category.Category;
 import io.nology.todos.category.CategoryRepository;
+import io.nology.todos.category.NotFoundException;
 
 @Service
 public class TodoService {
     
     private final TodoRepository todoRepository;
-    //private final CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
 
-   
     public TodoService(TodoRepository todoRepository, CategoryRepository categoryRepository) {
         this.todoRepository = todoRepository;
-        //this.categoryRepository = categoryRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     // create a new todo
-    public Todo createTodo(Todo todo) {
-        return todoRepository.save(todo);
+    public Todo createTodo(CreateTodoDTO data) {
+        Todo todo = new Todo();
+        todo.setTitle(data.getTitle());
+        todo.setDescription(data.getDescription());
+       Category category = categoryRepository.findById(data.getCategoryId()).orElseThrow(() -> new NotFoundException("Category not found"));
+
+        todo.setCategory(category);
+        todo.setDueDate(data.getDueDate());
+        todo.setPriority(data.getPriority());
+        todo.setIsArchived(false); //Defaults to false when creating
+        todo = todoRepository.save(todo);
+
+        return todo;
     }
 
-    // get all todos
+    // fetch all non-archived todos and returns the list of all active todos
     public List<Todo> getTodos() {
-        return todoRepository.findAll();
+        return todoRepository.findByIsArchivedFalse();
     }
 
-    // get todos by category ID
-    public List<Todo> getTodosByCategory(Long categoryId) {
-        return todoRepository.findByCategoryId(categoryId);
+     // Find todo by id (excluding archived todos)
+     public Todo getTodoById(Long todoId) {
+        Todo todo = todoRepository.findById(todoId)
+                .orElseThrow(() -> new NotFoundException("Todo not found"));
+
+        if (todo.getIsArchived()) {
+            throw new NotFoundException("Todo not found");
+        }
+        return todo;
     }
+
+
 
     // Soft delete todo (archive it)
     public Todo softDeleteTodo(Long todoId) {
-        Optional<Todo> optionalTodo = todoRepository.findById(todoId);
-        if (optionalTodo.isPresent()) {
-            Todo todo = optionalTodo.get();
-            todo.setIsArchived(true);
-            return todoRepository.save(todo); // retaining the task in db but hide it from active list
-        }
-        return null;
+        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new NotFoundException("Todo not found"));
+        
+        todo.setIsArchived(true);
+        return todoRepository.save(todo);
+   
     }
 
-    public Todo duplicateTodo(Long todoId) {
-     
-        Optional<Todo> optionalTodo = todoRepository.findById(todoId);
-        if (optionalTodo.isPresent()) {
-            Todo todo = optionalTodo.get();
+   //Duplicate a Todo
 
-            // creating a new Todo instance (copy)
-            Todo duplicateTodo = new Todo();
-            duplicateTodo.setTitle(todo.getTitle());
-            duplicateTodo.setCategory(todo.getCategory());
-            duplicateTodo.setIsArchived(false);
+  public Todo duplicateTodo(Long todoId) {
+    Todo originalTodo = todoRepository.findById(todoId).orElseThrow(() -> new NotFoundException("Todo not found"));
 
-            return todoRepository.save(duplicateTodo);
-        }
+    Todo duplicateTodo = new Todo();
+    duplicateTodo.setTitle(originalTodo.getTitle());
+    duplicateTodo.setDescription(originalTodo.getDescription());
+    duplicateTodo.setCategory(originalTodo.getCategory());
+    duplicateTodo.setIsArchived(false);
+    duplicateTodo.setDueDate(originalTodo.getDueDate());
+    duplicateTodo.setPriority(originalTodo.getPriority());
 
-        return null;
+    return todoRepository.save(duplicateTodo);
+  }
 
-    }
 
     // updating the todo
-    public Todo updateTodo(Long todoId, Todo updatedTodo) {
-        Optional<Todo> optionalTodo = todoRepository.findById(todoId);
-       
-        if (optionalTodo.isPresent()) {
-            Todo existingTodo = optionalTodo.get();
+    
+    public Todo updateTodo(Long todoId, UpdateTodoDTO data) {
+        Todo todo = todoRepository.findById(todoId)
+                .orElseThrow(() -> new NotFoundException("Todo not found"));
+    
+        todo.setTitle(data.getTitle());
+        todo.setDescription(data.getDescription());
 
-            // updating the fields
-
-            existingTodo.setTitle(updatedTodo.getTitle());
-            existingTodo.setCategory(updatedTodo.getCategory());
-
-            existingTodo.setDueDate(updatedTodo.getDueDate());
-
-            return todoRepository.save(existingTodo);
-        }
-        return null;
-
+        // Fetch the category by categoryId for update
+        Category category = categoryRepository.findById(data.getCategoryId())
+                .orElseThrow(() -> new NotFoundException("Category not found"));
+        
+        todo.setCategory(category);  // Set the updated category object
+        todo.setDueDate(data.getDueDate());
+        todo.setPriority(data.getPriority());
+    
+        return todoRepository.save(todo);
     }
 
-     // Get a todo by its ID
-     public Optional<Todo> getTodoById(Long id) {
-        return todoRepository.findById(id);
+    // Fetch todos by categoryId
+
+      // Fetch todos by categoryId
+      public List<Todo> getTodosByCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new NotFoundException("Category not found"));
+        
+        // Fetch todos for the given category
+        return todoRepository.findByCategory(category);
     }
+
 
 }
 
@@ -99,5 +120,10 @@ public class TodoService {
  * The TodoService class is responsible for handling all the business logic related to Todo tasks. 
  * It acts as an intermediary between the TodoController (which handles API requests)
  *  and the TodoRepository (which interacts with the database).
+ * 
+ * public List<TodoDTO> getTodos() {
+    List<Todo> todos = todoRepository.findByIsArchivedFalse();
+    return todos.stream().map(this::mapToDTO).collect(Collectors.toList());
+}
  * 
  */
