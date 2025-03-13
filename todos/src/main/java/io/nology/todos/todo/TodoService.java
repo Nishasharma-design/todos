@@ -84,7 +84,7 @@ public class TodoService {
     
     public Todo updateTodo(Long todoId, UpdateTodoDTO data) {
         Todo todo = todoRepository.findById(todoId)
-                .orElseThrow(() -> new NotFoundException("Todo not found"));
+                .orElseThrow(() -> new NotFoundException("Todo not found with id: " + todoId));
     
         todo.setTitle(data.getTitle());
         todo.setDescription(data.getDescription());

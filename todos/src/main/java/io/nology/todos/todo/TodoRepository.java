@@ -21,4 +21,14 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     // Query to find todos by category
     List<Todo> findByCategory(Category category);
 
+    long countByCategoryId(Long categoryId);
 }
+
+
+/*
+ * countByCategoryId(Long) is a non-static method, meaning you must call it on an instance (todoRepository).
+If you try TodoRepository.countByCategoryId(id), Java expects countByCategoryId to be static, but it's not.
+ * 
+ * 
+ * 
+ */

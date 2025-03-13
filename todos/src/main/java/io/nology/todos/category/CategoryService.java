@@ -6,11 +6,14 @@ import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import io.nology.todos.todo.TodoRepository;
+
 @Service
 public class CategoryService {
   
     private final CategoryRepository categoryRepository; //used to interact with database
     private final ModelMapper modelMapper; //convert DTOs into entity objects
+    private TodoRepository todoRepository;
    
     //constructor automatically injects CategoryRepo and ModelMappr into this service
     public CategoryService(CategoryRepository categoryRepository, ModelMapper modelMapper) {
@@ -54,18 +57,33 @@ public class CategoryService {
 
     // Delete category by ID (Hard delete)
 
-    public boolean deleteCategoryById(Long id) {
-        Optional<Category> categoryOptional = getCategoryById(id);
+    // public boolean deleteCategoryById(Long id) {
+    //     Optional<Category> categoryOptional = getCategoryById(id);
 
-        if (categoryOptional.isEmpty()) {
-            return false;
-        }
+    //     if (categoryOptional.isEmpty()) {
+    //         return false;
+    //     }
 
-        categoryRepository.delete(categoryOptional.get());
-        return true;
+    //     categoryRepository.delete(categoryOptional.get());
+    //     return true;
+    // }
+
+
+    // soft delete category
+    public void deleteCategoryById(Long id) {
+        Category category = categoryRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Category with ID " + id + " not found"));
+
+        // Soft delete by setting isArchived to true
+        category.setIsArchived(true);
+        categoryRepository.save(category);
     }
 
+    public List<Category> getActiveCategories() {
+        return categoryRepository.findByIsArchivedFalse();
     }
+    
+     }
 
 
 /*  why service layer?

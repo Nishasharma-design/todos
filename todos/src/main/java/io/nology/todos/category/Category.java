@@ -16,6 +16,8 @@ public class Category extends BaseEntity {
     @Column(nullable = false, unique = true) //name must be unique to avoid duplicacy
     private String name;
 
+    private boolean isArchived = false; //Soft delete
+
     @OneToMany(mappedBy = "category") //one category can have multiple todos
     @JsonIgnoreProperties("category")
     private List<Todo> todos; // A list to store Todo objects
@@ -39,6 +41,15 @@ public class Category extends BaseEntity {
         return todos; //returns the list of Todo objects stored in the todos variable.
     }
 
+    // Getter and Setter
+    public boolean getIsArchived() {
+        return isArchived;
+    }
+
+    public void setIsArchived(boolean isArchived) {
+        this.isArchived = isArchived;
+    }
+
     
 }
 
@@ -48,4 +59,6 @@ public class Category extends BaseEntity {
  * This Category class maps to the category table in MySQL.
      Every Category object corresponds to a row in the database.
  * 
+ * 
+ * JsonIgnoreProperties***
  */

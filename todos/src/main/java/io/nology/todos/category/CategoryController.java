@@ -1,13 +1,11 @@
 package io.nology.todos.category;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/category")
 public class CategoryController {
     
+   @Autowired
    private CategoryService categoryService;
 
    public CategoryController(CategoryService categoryService) {
@@ -53,7 +52,7 @@ public class CategoryController {
    }
 
    // update category by ID
-   @PutMapping
+   @PutMapping("/{id}")
    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @Valid @RequestBody UpdateCategoryDTO data) throws NotFoundException {
     Optional<Category> result = this.categoryService.updateCategoryById(id, data);
     Category updatedCategory = result.orElseThrow(() -> new NotFoundException("Category with ID " + id + " not found"));
@@ -61,18 +60,21 @@ public class CategoryController {
    }
 
    @DeleteMapping("/{id}")
-   public ResponseEntity<Void> deleteCategory(@PathVariable Long id) throws NotFoundException {
-      boolean wasDeleted = this.categoryService.deleteCategoryById(id);
-      if (!wasDeleted) {
-        throw new NotFoundException("Category with ID " + " not found");
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+        categoryService.deleteCategoryById(id);
+        return ResponseEntity.noContent().build();
+    }
 
-      }
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-   }
-   
-   
-
+    @GetMapping("/active")
+    public ResponseEntity<List<Category>> getActiveCategories() {
+        List<Category> categories = categoryService.getActiveCategories();
+        return ResponseEntity.ok(categories);
+    }
 }
+   
+   
+
+
 
 
 // A controller is responsible for handling HTTP requests. 

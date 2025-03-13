@@ -48,8 +48,8 @@ public ResponseEntity<Todo> createTodo(@RequestBody CreateTodoDTO data) {
 
     //  Update a Todo
     @PutMapping("/{id}")
-    public ResponseEntity<Todo> updateTodo(@PathVariable Long id, @RequestBody UpdateTodoDTO data) {
-        Todo todo = todoService.updateTodo(id, data);
+    public ResponseEntity<Todo> updateTodo(@PathVariable("id") Long todoId, @RequestBody UpdateTodoDTO data) {
+        Todo todo = todoService.updateTodo(todoId, data);
         return todo != null ? ResponseEntity.ok(todo) : ResponseEntity.notFound().build();
     }
 

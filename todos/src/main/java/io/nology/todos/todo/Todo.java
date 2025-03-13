@@ -33,6 +33,7 @@ public class Todo extends BaseEntity {
     private Integer priority;
 
 
+    //category_id is a foreign key linked to category table
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false) //this establish Foreign key relation with category model
     private Category category;
@@ -120,3 +121,4 @@ public class Todo extends BaseEntity {
      }
 
 }
+

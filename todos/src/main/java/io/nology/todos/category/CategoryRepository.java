@@ -1,5 +1,6 @@
 package io.nology.todos.category;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,6 +10,8 @@ import io.nology.todos.todo.Todo;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     Optional<Todo> findById(Category categoryId);
+
+    List<Category> findByIsArchivedFalse();  // Fetch only non-archived categories
     
 }
 
