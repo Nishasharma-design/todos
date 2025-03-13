@@ -2,25 +2,20 @@ import { useState } from "react";
 
 
 
-interface Category {
-    id: number;
-    name: string;
-}
-
-interface AddTodoFormProps {
-    categories: Category[];
-    addTodo: (newTodo: { title: string; categoryId: number }) => Promise<void>;
-}
-
-const AddTodoForm: React.FC<AddTodoFormProps> = ({ categories, addTodo }) => {
-    const [newTodoTitle, setNewTodoTitle] = useState('');
+const AddTodoForm = ({ categories, addTodo }: { 
+    categories: { id: number; name: string }[]; 
+    addTodo: (newTodo: { title: string; categoryId: number }) => Promise<void>; 
+}) => {
+    const [newTodoTitle, setNewTodoTitle] = useState("");
     const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
-
+    
     const handleSubmit = async () => {
         if (newTodoTitle && selectedCategoryId !== null) {
             await addTodo({ title: newTodoTitle, categoryId: selectedCategoryId });
-            setNewTodoTitle("");
-            setSelectedCategoryId(null);
+
+            
+            setNewTodoTitle(""); // resets todo title back to empty 
+            setSelectedCategoryId(null); // resets category space back to empty
         }
     };
 

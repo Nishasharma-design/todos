@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
-import { addTodo, deleteTodo as deleteTodoApi, getCategories, getTodos, updateTodo } from "./services/api";
+import { addTodo, deleteTodo as deleteTodoApi, getCategories, getTodos, updateTodo, addNewCategory } from "./services/api";
 import CategoryList from "./component/CategoryList";
 import TodoList from "./component/TodoList";
 import AddTodoForm from "./component/AddTodoForm";
+import AddCategoryForm from "./component/AddCategoryForm";
 import './App.css';
 
 const App = () => {
   const [todos, setTodos] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+
+  // fxn to filter todos based on selected category
+  const filteredTodos = selectedCategoryId 
+                       ?  todos.filter(todo => todo.category.id === selectedCategoryId)
+                        : todos;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,6 +27,23 @@ const App = () => {
     };
     fetchData();
   }, []);
+
+  // i was facing an issue, when i was adding todo, it would not reflect right away
+  // it would show up on refresh, so i tried below approc
+//   useEffect(() => {
+//     fetchTodos(); // Call it initially when the app loads
+// }, []);
+
+// // Move fetchTodos outside useEffect
+// const fetchTodos = async () => {
+//     try {
+//         setTodos(await getTodos());
+//         setCategories(await getCategories());
+//     } catch (error) {
+//         console.error('Error fetching data:', error);
+//     }
+// };
+
 
   const handleTitleChange = async (id: number, newTitle: string) => {
     await updateTodo(id, { title: newTitle });
@@ -47,21 +71,40 @@ const App = () => {
     setTodos(await getTodos()); // Refresh todos list
   };
 
+  const addCategory = async (name: string) => {
+    await addNewCategory(name);
+    setCategories(await getCategories()); //refresh categories
+  };
+
+
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-gray-100 py-8">
       
       <h1 className="text-3xl font-bold text-center mb-6">Todo App</h1>
       <div className="w-full max-w-4xl space-y-6">
+      <AddCategoryForm addCategory={addCategory} />
       <CategoryList categories={categories} />
+      {/* Category filter dropdown */}
+      <select 
+            value={selectedCategoryId || ""}
+            onChange={(e) => setSelectedCategoryId(e.target.value ? Number(e.target.value) : null)}
+            className="border px-2 py-1 rounded"
+            >
+              <option value="">All Categories</option>
+              {categories.map(category => (
+                <option key={category.id}  value={category.id}>{category.name}</option>
+              ))}
+            </select>
       <TodoList
-        todos={todos}
+        todos={filteredTodos}
         categories={categories}
         handleTitleChange={handleTitleChange}
         handleCategoryChange={handleCategoryChange}
         deleteTodo={handleDeleteTodo}
         duplicateTodo={duplicateTodo}
       />
-      <AddTodoForm categories={categories} addTodo={addTodo} />
+      
+      <AddTodoForm categories={categories} addTodo={addTodo}  />
     </div>
     </div>
    

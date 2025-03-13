@@ -62,6 +62,22 @@ export const getCategories = async () => {
     return response.json();
 };
 
+export const addNewCategory = async (name: string) => {
+    const response = await fetch('http://localhost:8080/category', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name }),
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to add Category");
+    }
+
+    return response.json(); // return the created category
+};
+
 
 
 /* 
