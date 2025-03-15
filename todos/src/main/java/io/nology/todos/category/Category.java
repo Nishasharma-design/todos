@@ -9,9 +9,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import io.nology.todos.todo.Todo; 
 
-@Entity
-@Table(name = "category")
-public class Category extends BaseEntity {
+@Entity // this tells backend that category is a databse table
+@Table(name = "category") // this tells backend that this class shud be stored in databse table named - Category
+@JsonIgnoreProperties({"todos"})
+public class Category extends BaseEntity { // category inherits from BaseEntity
 
     @Column(nullable = false, unique = true) //name must be unique to avoid duplicacy
     private String name;
@@ -22,7 +23,7 @@ public class Category extends BaseEntity {
     @JsonIgnoreProperties("category")
     private List<Todo> todos; // A list to store Todo objects
 
-
+// constructor of category class - it initializes an object when it is created
     public Category(String name) {
         this.name = name; 
     }

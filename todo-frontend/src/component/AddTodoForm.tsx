@@ -20,7 +20,7 @@ const AddTodoForm = ({ categories, addTodo }: {
     };
 
     return (
-        <div className="bg-white shadow-md p-4 rounded-lg">
+        <div className="bg-white shadow-md p-4 rounded-lg w-full">
             <h3 className="text-lg font-semibold mb-2">Add New Todo</h3>
             <div className="flex space-x-3">
                 <input

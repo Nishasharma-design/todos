@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-TodosApplication<todos>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "io.nology.todos.TodosApplication",
+            "projectName": "todos",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

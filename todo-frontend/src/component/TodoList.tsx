@@ -51,7 +51,7 @@ const TodoList: React.FC<TodoListProps> = ({
                         />
                         <select 
                         className="border rounded px-2 py-1 w-full"
-                        value={todo.category.id || ""}
+                        value={todo.category.id || ""} //this ensures dropdown displays the current category of todo or if todo doesnt have one, it displays ""
                         onChange={(e) => handleCategoryChange(todo.id, Number(e.target.value))}
                         >
                             <option value="">Select Category</option>

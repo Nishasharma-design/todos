@@ -28,60 +28,47 @@ const App = () => {
     fetchData();
   }, []);
 
-  // i was facing an issue, when i was adding todo, it would not reflect right away
-  // it would show up on refresh, so i tried below approc
-//   useEffect(() => {
-//     fetchTodos(); // Call it initially when the app loads
-// }, []);
+const handleTitleChange = async (id: number, newTitle: string) => {
+  setTodos(prevTodos => 
+      prevTodos.map(todo => 
+          todo.id === id ? { ...todo, title: newTitle } : todo
+      )
+  );
 
-// // Move fetchTodos outside useEffect
-// const fetchTodos = async () => {
-//     try {
-//         setTodos(await getTodos());
-//         setCategories(await getCategories());
-//     } catch (error) {
-//         console.error('Error fetching data:', error);
-//     }
-// };
+  await updateTodo(id, { title: newTitle }); // Send update to backend
+};
+
+const handleCategoryChange = async (id: number, newCategoryId: number) => {
+  await updateTodo(id, { categoryId: newCategoryId });
+  setTodos(await getTodos());
+};
 
 
-  const handleTitleChange = async (id: number, newTitle: string) => {
-    await updateTodo(id, { title: newTitle });
+
+  const duplicateTodo = async (todo: any) => {
+    await addTodo({ title: todo.title, categoryId: todo.category.id });
+    setTodos(await getTodos());
+  };
+  
+
+  const handleDeleteTodo = async (id: number) => {
+    await deleteTodoApi(id);
     setTodos(await getTodos());
   };
 
-  // handle category change for an existing todo
-  const handleCategoryChange = async (id: number, newCategoryId: number) => {
-    await updateTodo(id, { categoryId: newCategoryId }); // send category change to backend
-    setTodos(await getTodos()); // refresh todos list
-  };
-
-  const duplicateTodo = async (todo: any) => {
-    await addTodo({ title: todo.title, categoryId: todo.category.id }); // send new todo to backend
-    setTodos(await getTodos()); // refresh todos list
-  };
-
-  // const handleDeleteTodo = async (id: number) => {
-  //   await updateTodo(id, { isArchived: true });  // Soft delete: mark isArchived as true
-  //   setTodos(await getTodos());
-  // };
-
-  const handleDeleteTodo = async (id: number) => {
-    await deleteTodoApi(id);  // Call the delete API function from api.ts
-    setTodos(await getTodos()); // Refresh todos list
-  };
 
   const addCategory = async (name: string) => {
     await addNewCategory(name);
-    setCategories(await getCategories()); //refresh categories
+    setCategories(await getCategories());
   };
+  
 
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen bg-gray-100 py-8">
+    <div className="flex flex-col justify-start min-h-screen bg-gray-100 py-8 w-full">
       
       <h1 className="text-3xl font-bold text-center mb-6">Todo App</h1>
-      <div className="w-full max-w-4xl space-y-6">
+      <div className="w-full px-4 max-w-5xl mx-auto space-y-6">
       <AddCategoryForm addCategory={addCategory} />
       <CategoryList categories={categories} />
       {/* Category filter dropdown */}
@@ -91,7 +78,7 @@ const App = () => {
             className="border px-2 py-1 rounded"
             >
               <option value="">All Categories</option>
-              {categories.map(category => (
+              {categories.map((category) => (
                 <option key={category.id}  value={category.id}>{category.name}</option>
               ))}
             </select>
@@ -115,10 +102,55 @@ export default App;
 
 
 
+  // const duplicateTodo = async (todo: any) => {
+
+  //  const duplicatedTodo = { title: todo.title, categoryId: todo.category.id };
+  //  setTodos(prevTodos => [...prevTodos, duplicatedTodo]);
+
+  //  // send the new duplicated todo to backend
+  //  await addTodo(duplicatedTodo);
+
+  //  // refresh todos list after duplication
+  //  setTodos(await getTodos());
+
+  // }
+
+  // const handleDeleteTodo = async (id: number) => {
+  //   setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+
+  //   //send the dleete request to backend
+  //   await deleteTodoApi(id);
+
+  //   // refresh todos after deletion
+  //   setTodos(await getTodos());
+  // }
 
 
+ // const addCategory = async (name: string) => {
 
+  //  const newCategory = { id: Math.random(), name };
 
+  //  setCategories(prevCategories => [prevCategories, newCategory]);
+
+  //  // send the add category request to backend
+  //  await addNewCategory(name);
+
+  // // refresh categories list after adding 
+  //  setCategories(await getCategories());
+
+  // }
+
+  // handle category change for an existing todo
+  // const handleCategoryChange = async (id: number, newCategoryId: number) => {
+  //   setTodos(prevTodos => 
+  //             prevTodos.map(todo => todo.id === id ? { ...todo, category: { id: newCategoryId } } : todo)
+  //   );
+  //   // send update to backend
+  //   await updateTodo(id, { categoryId: newCategoryId });
+
+  //   // after backend update, refresh todos list
+  //   setTodos(await getTodos());
+  // };
 
 
 

@@ -26,7 +26,7 @@ public class CategoryController {
 
    
    //Create a Category
-   @PostMapping  // This maps the method to HTTP POST requests @RequestBody - is an annotation that converts incoming JSON data from HTTP request into a java object (CreateCategoryDTO)
+   @PostMapping // This maps the method to HTTP POST requests @RequestBody - is an annotation that converts incoming JSON data from HTTP request into a java object (CreateCategoryDTO)
    public ResponseEntity<Category> createCategory(@Valid @RequestBody CreateCategoryDTO data) {
          Category newCategory = this.categoryService.createCategory(data); //Calls service layer
          return new ResponseEntity<>(newCategory, HttpStatus.CREATED);

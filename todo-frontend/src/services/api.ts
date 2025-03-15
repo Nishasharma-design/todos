@@ -42,12 +42,21 @@ export const deleteTodo = async (id: number) => {
 //update a todo
 //create a PUT or PATCH request function to update tasks in your backend.
 export const updateTodo = async (id: number, updatedData: { title?: string; categoryId?: number; isArchived?: boolean }) => {
+
+    //console.log("Request body for PUT request:", JSON.stringify(updatedData));
+
+    const bodyData = {
+        title: updatedData.title,
+        categoryId: updatedData.categoryId,  // Include categoryId here
+        isArchived: updatedData.isArchived,  // Include isArchived if needed
+    };
+
     const response = await fetch(`${BASE_URL}/${id}`, {
         method: "PUT", // or PATCH if partial updates are allowed
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(updatedData), // Convert the updated data to JSON format
+        body: JSON.stringify(bodyData), // Convert the updated data to JSON format
     });
     return response.json(); // Convert the response to JSON
 };

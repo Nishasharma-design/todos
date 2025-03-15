@@ -23,7 +23,7 @@ public class CategoryService {
 //** A class is defined using class and a method is method a class and has a return type */
 
     // ctreate a new category
-//convert CTO into category entity using modelMapper
+//convert DTO into category entity using modelMapper
     public Category createCategory(CreateCategoryDTO data) { //this is createCategory method
         Category newCategory = modelMapper.map(data, Category.class); //converts DTOs into Category entity 
         return categoryRepository.save(newCategory); //save new category in db.
