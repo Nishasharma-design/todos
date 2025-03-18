@@ -15,36 +15,34 @@ public class CategoryService {
     private final ModelMapper modelMapper; //convert DTOs into entity objects
     private TodoRepository todoRepository;
    
-    //constructor automatically injects CategoryRepo and ModelMappr into this service
-    public CategoryService(CategoryRepository categoryRepository, ModelMapper modelMapper) {
-        this.categoryRepository = categoryRepository; //here i am assigning injected categoryRepository to categoryRepository field
-        this.modelMapper = modelMapper;   
-    }
-//** A class is defined using class and a method is method a class and has a return type */
 
-    // ctreate a new category
-//convert DTO into category entity using modelMapper
+    public CategoryService(CategoryRepository categoryRepository, ModelMapper modelMapper, TodoRepository todoRepository) {
+        this.categoryRepository = categoryRepository; //here i am assigning injected categoryRepository to categoryRepository field
+        this.modelMapper = modelMapper; 
+        this.todoRepository = todoRepository;   
+    }
+
     public Category createCategory(CreateCategoryDTO data) { //this is createCategory method
         Category newCategory = modelMapper.map(data, Category.class); //converts DTOs into Category entity 
         return categoryRepository.save(newCategory); //save new category in db.
     }
 
     // get all categories
-    public List<Category> getAllCategories() { //this method returns a list of category entities
-        return categoryRepository.findAll(); //retrieve all categories from db
+    public List<Category> getAllCategories() { 
+        return categoryRepository.findAll(); 
     }
 
     // get a single category by ID
     public Optional<Category> getCategoryById(Long id) {
-        return categoryRepository.findById(id); //return Optional<Category>
+        return categoryRepository.findById(id); 
     }
 
     // Update category by ID 
     public Optional<Category> updateCategoryById(Long id, UpdateCategoryDTO data) {
         Optional<Category> categoryOptional = getCategoryById(id); //this line checks whether the category with the given id exists by calling getCategoryById()
 
-        if (categoryOptional.isEmpty()) { //this checks whether categoryOptional is empty.
-            return Optional.empty(); //if it is empty, this means the category with the given id dont exist in db, so it return an empty Optional
+        if (categoryOptional.isEmpty()) { 
+            return Optional.empty(); 
         }
 
         Category categoryToUpdate = categoryOptional.get(); //this extracts category object from Optional
@@ -55,18 +53,6 @@ public class CategoryService {
 
     } 
 
-    // Delete category by ID (Hard delete)
-
-    // public boolean deleteCategoryById(Long id) {
-    //     Optional<Category> categoryOptional = getCategoryById(id);
-
-    //     if (categoryOptional.isEmpty()) {
-    //         return false;
-    //     }
-
-    //     categoryRepository.delete(categoryOptional.get());
-    //     return true;
-    // }
 
 
     // soft delete category
@@ -82,62 +68,26 @@ public class CategoryService {
     public List<Category> getActiveCategories() {
         return categoryRepository.findByIsArchivedFalse();
     }
+
+    public void hardDeleteCategory(Long categoryId) {
+        // Check if the category exists
+        Optional<Category> categoryOptional = categoryRepository.findById(categoryId);
+        if (categoryOptional.isEmpty()) {
+            throw new RuntimeException("Category not found!");
+        }
+
+        // Ensure that no todos are linked to this category before deletion
+        long relatedTodosCount = todoRepository.countByCategoryId(categoryId);
+        if (relatedTodosCount > 2) {
+            throw new RuntimeException("Cannot delete category with existing todos!");
+        }
+
+        // Delete category permanently
+        categoryRepository.deleteById(categoryId);
+    }
+}
     
-     }
+     
 
 
-/*  why service layer?
- ---- the service layer contains business logic and acts as a bridge between the
- --- controller (API endpoints) and the repository (database operations).
- 
- ** It ensures clean separation of concerns (controller only handles HTTP requests,
-    repository only interacts with the Database. ) 
- 
- *** It allows us to reuse logic in different parts of the 
-     application (e.g., validation, transformations, etc.)
-
-  *** By implementing CategoryService first, we can properly handle CRUD operations before exposing them
-      in the controller.
-
-  *** The controller shud not contain business logic , 
-      it shud call the service
-
-
-
-      🔹 Why do we use a service layer in Spring Boot?
-✔️ It helps separate business logic from controllers and repositories, making the code more maintainable.
-
-🔹 Why are we using ModelMapper?
-✔️ It helps convert DTOs into entities automatically, reducing boilerplate code.
-
-🔹 Why is Optional used in getCategoryById()?
-✔️ It helps handle cases where the category might not exist, preventing NullPointerException.
-
-🔹 What happens if you delete a category that has associated todos?
-✔️ If the relationship is mapped correctly with @OneToMany, Spring/Hibernate prevents deletion unless todos are handled first. 
- */
-
- /* **About Code**
- @Service - it tells Spring Boot that this is a service component, Spring will automatically manage
-  * it ensures that the class can be injected into other parts of app 
-
-  categoryRepository - interact with database( perform CRUD operations )
-  modelMapper - convert DTOs into entity objects.
-
-  */
-
-
-  /* 
-     Cmd + Ctrl + Space to add emojis
-
-   * This class is responsible for:
-Processing the data (converting DTOs to entities, validating, etc.)
- Interacting with the database via CategoryRepository
- Performing CRUD operations (create, read, update, delete categories)
-
- It does not handle HTTP requests—it only performs business logic!
-   * 
-   * 
-   * 
-   */
 

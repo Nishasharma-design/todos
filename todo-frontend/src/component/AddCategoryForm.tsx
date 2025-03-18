@@ -1,13 +1,39 @@
-import { useState } from "react"
 
 
-const AddCategoryForm = ({ addCategory }: { addCategory: (name: string) => Promise<void> }) => {
+import { useState } from "react";
+
+const AddCategoryForm = ({ addCategory, categories }: { 
+    addCategory: (name: string) => Promise<void>;
+    categories: { id: number; name: string }[];
+}) => {
     const [categoryName, setCategoryName] = useState("");
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async () => {
-        if (!categoryName) return;
-        await addCategory(categoryName);
-        setCategoryName(""); // Reset input field
+        if (!categoryName.trim()) {
+            setError("Category name cannot be empty.");
+            return;
+        }
+
+        // Check for duplicate category
+        const isDuplicate = categories.some(cat => cat.name.toLowerCase() === categoryName.toLowerCase());
+        if (isDuplicate) {
+            setError("This category already exists.");
+            return;
+        }
+
+        setError(null);
+        setLoading(true);
+        
+        try {
+            await addCategory(categoryName);
+            setCategoryName(""); // Reset input field
+        } catch (error) {
+            setError("Failed to add category. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -19,12 +45,15 @@ const AddCategoryForm = ({ addCategory }: { addCategory: (name: string) => Promi
                value={categoryName}
                onChange={(e) => setCategoryName(e.target.value)}
                className="border rounded px-2 py-1 w-full"
-               />
-               <button className="bg-green-500 text-black px-3 py-1 rounded hover:bg-green-600"
-                onClick={handleSubmit}>
-                    Add Category
-                </button>
-
+            />
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            <button 
+                className="bg-green-500 text-black px-3 py-1 rounded hover:bg-green-600 disabled:bg-gray-400"
+                onClick={handleSubmit}
+                disabled={loading}
+            >
+                {loading ? "Adding..." : "Add Category"}
+            </button>
         </div>
     );
 };

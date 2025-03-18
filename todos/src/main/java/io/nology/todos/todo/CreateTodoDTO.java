@@ -78,20 +78,4 @@ public class CreateTodoDTO {
 }
 
 
-/*
- *  🛑 the yellow underline is IntelliJ IDEA warning which
- *  comes if i am not using getter
- * and setter for the fiels, getters and setters are used to 
- * access and modify these fields.
- * 
- * ✅ encapsulation is one of the core principles of OOP
- * and it suggests the fields should be private to prevent direct
- * access
- * 
- * If you're not using getters and setters, your IDE sees that the id 
- * field (or any other private field) is not being accessed in any controlled way 
- * (i.e., it isn't publicly accessible for reading or modifying). Hence, the yellow underline appears.
- * 
- * 
- * 
- */
+

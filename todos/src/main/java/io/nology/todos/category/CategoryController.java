@@ -70,57 +70,16 @@ public class CategoryController {
         List<Category> categories = categoryService.getActiveCategories();
         return ResponseEntity.ok(categories);
     }
+
+
+     // ✅ Hard Delete API (Deletes Permanently)
+     @DeleteMapping("/hard/{categoryId}")
+     public ResponseEntity<String> hardDeleteCategory(@PathVariable Long categoryId) {
+         try {
+             categoryService.hardDeleteCategory(categoryId);
+             return ResponseEntity.ok("Category permanently deleted!");
+         } catch (RuntimeException e) {
+             return ResponseEntity.badRequest().body(e.getMessage());
+         }
+     }
 }
-   
-   
-
-
-
-
-// A controller is responsible for handling HTTP requests. 
-// It acts as a bridge between frontend-( React app ) and backend
-// receives requests like GET, POST, PUT and DELETE
-// calls the service layer ( CategoryService ) to process data.
-// Returns a response to the client-( React app )
-
-/* Spring Boot receives an HTTP POST request with JSON data
- * Spring uses HttpMessageConverter(Jackson) to automatically map JSON to Java Object.
- * the mapped Java object (CreateCategoryDTO) is passed to the method
- * as a parameter.
- * 
- * if i dont use @RequestBody, Spring Boot wont convert the JSON 
- * request into a Java object.
- * 
- * @Valid - ensures the input data follows validation rules
- * 
- * This means that if the category was found, result contains it, and it is safely assigned to foundCategory. But if the category was not found, the program immediately throws an error instead of returning null.
- * 
- * 
- * 
- * if (result.isEmpty()) {
-    throw new NotFoundException("Category with ID " + id + " not found");
-}
-Category foundCategory = result.get();
-
- */
-
-
- /*****  
-  *    After the service saves data using categoryRepository.save(newCategory), we need a way to fetch that data.
-     The controller calls categoryService.getAllCategories()
-  */
-
- /*
-  * 
-     This class is responsible for:
-Receiving HTTP requests (like POST /categories to create a category)
- Calling the service layer to execute the actual logic
- Returning appropriate HTTP responses (success, error messages, etc.)
-
- It does NOT create the category itself—it just forwards the request to the service!
-
-
-  */
-
-
-/********  *mB*L5Wb */

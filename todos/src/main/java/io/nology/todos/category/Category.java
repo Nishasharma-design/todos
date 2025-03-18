@@ -56,10 +56,4 @@ public class Category extends BaseEntity { // category inherits from BaseEntity
 
 
 
-/* 
- * This Category class maps to the category table in MySQL.
-     Every Category object corresponds to a row in the database.
- * 
- * 
- * JsonIgnoreProperties***
- */
+

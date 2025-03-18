@@ -1,22 +1,46 @@
 import { useState } from "react";
 
 
+// todo represents a single task
+interface Todo {
+  id: number; 
+  title: string; 
+  isArchived: boolean; 
+  category: { id: number; name: string }; 
+}
 
-const AddTodoForm = ({ categories, addTodo }: { 
+
+
+const AddTodoForm = ({ categories, addTodo, setTodos, todos}: { 
     categories: { id: number; name: string }[]; 
-    addTodo: (newTodo: { title: string; categoryId: number }) => Promise<void>; 
+    addTodo: (newTodo: { title: string; categoryId: number }) => Promise<void>;
+    setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+    todos: Todo[];
 }) => {
     const [newTodoTitle, setNewTodoTitle] = useState("");
     const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
     
+   
+   
     const handleSubmit = async () => {
-        if (newTodoTitle && selectedCategoryId !== null) {
-            await addTodo({ title: newTodoTitle, categoryId: selectedCategoryId });
-
-            
-            setNewTodoTitle(""); // resets todo title back to empty 
-            setSelectedCategoryId(null); // resets category space back to empty
-        }
+      if (newTodoTitle && selectedCategoryId !== null) {
+        // Add new todo via the addTodo function
+        await addTodo({ title: newTodoTitle, categoryId: selectedCategoryId });
+  
+        // Immediately update the todos state to reflect the new todo
+        setTodos((prevTodos) => [
+          ...prevTodos,
+          {
+            id: Date.now(), 
+            title: newTodoTitle,
+            isArchived: false, // Default value for new todos
+            category: { id: selectedCategoryId, name: "Loading..." }, // Temporary placeholder
+          },
+        ]);
+  
+        setNewTodoTitle(""); // Reset todo title
+        setSelectedCategoryId(null); // Reset category
+      }
     };
 
     return (

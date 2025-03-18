@@ -45,30 +45,3 @@ public abstract class BaseEntity {
     
 
 }
-
-
-/* @MappedSuperclass - this tells hibernate that this is a base class, not a table
-                     - @MapperSuperclass means this wont become a separate table but
-                     - just a reusable base class
-
-  @GeneratedValue(strategy = GenerationType.IDENTITY) - Automatically generated id
-                            - we use GenerationType.IDENTITY for id bcz it tells the
-                            - database to auto-increment the ID.
-
-  @CreationTimestamp - Auto-fills createdAt when the entity is first saved
-                     - I am using @CreationTimestamp and @UpdateTimestamp 
-                     - to automatically track when an entity is created or updated 
-                     - without manually setting it.
-  @UpdateTimestamp - Auto-updates updatedAt whenever the entity is modified
-
-  
- * 
- */
-
-
-/* why we need BaseEntity?
--- every entity ( Category, Todo ) will have common fields
-like id(primary key) , createdAt(When it was created), updatedAt(when it was last updated)
-
-
-*/

@@ -1,12 +1,13 @@
 package io.nology.todos.todo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import io.nology.todos.category.Category;
 
 import java.util.List;
 
-
+@Repository
 public interface TodoRepository extends JpaRepository<Todo, Long> {
     
   //find todos by category, but exclude archived todos
@@ -22,6 +23,8 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     List<Todo> findByCategory(Category category);
 
     long countByCategoryId(Long categoryId);
+
+   
 }
 
 

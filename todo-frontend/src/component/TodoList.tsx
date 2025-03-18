@@ -2,10 +2,10 @@ import React from "react";
 
 // todo represents a single task
 interface Todo {
-    id: number; // unique identifier
-    title: string; // name of the task
-    isArchived: boolean; // if true, the task is soft-deleted
-    category: { id: number; name: string }; //category object( contains id and name )
+    id: number; 
+    title: string; 
+    isArchived: boolean; 
+    category: { id: number; name: string }; 
 }
 
 
@@ -39,42 +39,48 @@ const TodoList: React.FC<TodoListProps> = ({
     return (
         <div className="bg-white shadow-md rounded-lg p-6 space-y-4 w-full">
             <h2 className="text-xl font-semibold mb-2">Todos</h2>
-            <ul className="space-y-3">
-                {/*  todos.filter -> removes archived todos */}
-                {todos.filter(todo => !todo.isArchived).map((todo) => ( // todos.map -> loops thru remaining todos and returns <li> for each todo 
-                    <li key={todo.id} className="flex items-center justify-between hover:bg-gray-50 rounded-lg shadow-sm"> 
-                        <input // Displays the todo title inside an input.
-                        type="text"
-                        value={todo.title}
-                        className="border rounded px-2 py-1 w-full"
-                        onChange={(e) => handleTitleChange(todo.id, e.target.value)} // calls handleTitleChange and passes todo.id and new title(e.target.value)
-                        />
-                        <select 
-                        className="border rounded px-2 py-1 w-full"
-                        value={todo.category.id || ""} //this ensures dropdown displays the current category of todo or if todo doesnt have one, it displays ""
-                        onChange={(e) => handleCategoryChange(todo.id, Number(e.target.value))}
-                        >
-                            <option value="">Select Category</option>
-                            {categories.map((category) => (
-                                <option key={category.id} value={category.id}>{category.name}</option>
-                            ))}
-                        </select>
-                        <button 
-                        className="bg-red-500 text-black px-3 py-1 rounded hover:bg-red-600"
-                        onClick={() => deleteTodo(todo.id)}>
-                            Delete
-                            </button>
-                            <button className="bg-blue-500 text-black px-3 py-1 rounded hover:bg-blue-600"
-                            onClick={() => duplicateTodo(todo)}>
-                                Duplicate
-                            </button>
-                    </li>
-                ))}
-            </ul>
+            {todos?.length > 0 ? (
+  <ul className="space-y-3">
+    {/*  todos.filter -> removes archived todos */}
+    {todos.filter(todo => !todo.isArchived).map((todo) => ( 
+      <li key={todo.id} className="flex items-center justify-between hover:bg-gray-50 rounded-lg shadow-sm"> 
+        <input 
+          type="text"
+          value={todo.title}
+          className="border rounded px-2 py-1 w-full"
+          onChange={(e) => handleTitleChange(todo.id, e.target.value)}
+        />
+        <select 
+          className="border rounded px-2 py-1 w-full"
+          value={todo.category?.id || ""}
+          onChange={(e) => handleCategoryChange(todo.id, Number(e.target.value))}
+        >
+          <option value="">Select Category</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>{category.name}</option>
+          ))}
+        </select>
+        <button 
+          className="bg-red-500 text-black px-3 py-1 rounded hover:bg-red-600"
+          onClick={() => deleteTodo(todo.id)}>
+          Delete
+        </button>
+        <button 
+          className="bg-blue-500 text-black px-3 py-1 rounded hover:bg-blue-600"
+          onClick={() => duplicateTodo(todo)}>
+          Duplicate
+        </button>
+      </li>
+    ))}
+  </ul>
+) : (
+  <p className="text-gray-500">No todos available.</p>
+)}
+
         </div>
     );
 };
 
 export default TodoList;
 
-// the key={todo.id} prop is used by React to track and efficiently update the list
+

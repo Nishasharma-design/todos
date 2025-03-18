@@ -91,7 +91,7 @@ public class TodoService {
 
         // Fetch the category by categoryId for update
         Category category = categoryRepository.findById(data.getCategoryId())
-                .orElseThrow(() -> new NotFoundException("Category not found"));
+                .orElseThrow(() -> new NotFoundException("Category not found with id: " + data.getCategoryId()));
         
         todo.setCategory(category);  // Set the updated category object
         todo.setDueDate(data.getDueDate());
@@ -111,19 +111,14 @@ public class TodoService {
         return todoRepository.findByCategory(category);
     }
 
+    // to check that todos are archived and not hard deleted
+    public List<Todo> getAllTodos() {
+        return todoRepository.findAll();
+    }
 
 }
 
 
 
-/*
- * The TodoService class is responsible for handling all the business logic related to Todo tasks. 
- * It acts as an intermediary between the TodoController (which handles API requests)
- *  and the TodoRepository (which interacts with the database).
- * 
- * public List<TodoDTO> getTodos() {
-    List<Todo> todos = todoRepository.findByIsArchivedFalse();
-    return todos.stream().map(this::mapToDTO).collect(Collectors.toList());
-}
- * 
- */
+
+ 

@@ -59,38 +59,17 @@ public ResponseEntity<Todo> createTodo(@RequestBody CreateTodoDTO data) {
         Todo deletedTodo = todoService.softDeleteTodo(id);
         return deletedTodo != null ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
+
+
+    // to check that todos are archived and not hard deleted
+    @GetMapping("/all")
+    public ResponseEntity<List<Todo>> getAllTodos() {
+        List<Todo> allTodos = todoService.getAllTodos();
+        return ResponseEntity.ok(allTodos);
+    }
+
 }
 
 
 
-/* public ResponseEntity<Todo> createTodo(@RequestBody Todo todo) {
-    Todo createdTodo = todoService.createTodo(todo);
-    
-    Meaning of above:-  ResponseEntity<Todo> - this defines the return type
-      it is a wrapper that provides extra info along with response like HTTP status codes
-      the actual response body will contain a Todo object
-    
-      @RequestBody Todo todo - now this tells spring that the incoming JSON 
-      request body should be converted into Todo java object
 
-      
-  @GetMapping
-    public List<Todo> getTodos() {
-        return todoService.getTodos();
-    }
-
-    //  Get a single Todo, handling 404 errors
-    @GetMapping("/{id}")
-    public ResponseEntity<Todo> getTodoById(@PathVariable Long id) {
-        Optional<Todo> todo = Optional.ofNullable(todoService.getTodoById(id));
-        return todo.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-✔️ The frontend sends a DELETE /todos/{id} request.
-✔️ Spring Boot maps it to @DeleteMapping("/{id}").
-✔️ Instead of deleting, softDeleteTodo() sets isArchived = true.
-✔️ Future GET /todos requests only return non-archived todos, so archived ones "disappear" from the UI.
-
-
-
-    */
